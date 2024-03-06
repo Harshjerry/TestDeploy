@@ -1,18 +1,28 @@
 const express = require("express");
 const app = express();
-const mongoose = require("mongoose");
 const promptRouter = require('./routes/promptRoute');
 const cors = require('cors');
-const dotenv = require("dotenv");
-dotenv.config();
+const mongoose = require("mongoose");
+const dotenv = require("dotenv");  //require dotenv package
+dotenv.config({ path: "./config.env" }); 
 
+const connectDB =  async ()=>{
 
-mongoose.connect(process.env.MONGO_URL, { useNewUrlParser: true, useUnifiedTopology: true })
-  .then(() => console.log("db connection successful"))
-  .catch((err) => {
-    console.log(err);
-  });
+  try{
+      const conn = await mongoose.connect(process.env.MONGO_URL,{
+          //must add in order to not get any error masseges:
+          useUnifiedTopology:true,
+          useNewUrlParser: true
+      })
+      console.log(`mongo database is connected!!! ${conn.connection.host} `)
+  }catch(error){
+      console.error(`Error: ${error} `)
+      process.exit(1) //passing 1 - will exit the proccess with error
+  }
 
+}
+
+connectDB();
 app.use(cors());
 app.use(express.json());   
 
